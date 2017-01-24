@@ -1,0 +1,35 @@
+import random
+
+import matplotlib.pyplot as plt
+import numpy as np
+import Tkinter
+
+sampl = sorted(np.random.uniform(low=0.5, high=13.3, size=(50,)))
+sampl2 = sorted(np.random.uniform(low=0.5, high=13.3, size=(50,)))
+# x = random.sample(range(1,50),20);
+# y = random.sample(range(1,21), 20);
+x = np.random.choice(50, 20, replace=True)
+y = np.random.choice(30, 20, replace=True)
+
+fit = np.polyfit(x,y,1)
+fit_fn = np.poly1d(fit)
+
+plt.plot(x,y, 'bo', x, fit_fn(x), '-r')
+plt.xlim(0, 50)
+plt.ylim(0, 50)
+# plt.plot(sampl, sampl2)
+plt.ylabel('some numbers')
+
+# plot_func = plt.plot(sampl, sampl2)
+# test = Button(plot_func, 'test')
+# fig = plt.figure()
+# ax = fig.add_subplot(111)
+# ax.plot(np.random.rand(10))
+
+# def onclick(event):
+#     print('button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
+#           (event.button, event.x, event.y, event.xdata, event.ydata))
+#
+# cid = fig.canvas.mpl_connect('button_press_event', onclick)
+plt.show()
+
