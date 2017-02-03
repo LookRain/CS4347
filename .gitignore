@@ -3,10 +3,11 @@
 
 .idea/
 .idea
+#/.idea
 # User-specific stuff:
 .idea/workspace.xml
 .idea/tasks.xml
-
+tut3/music_speech
 # Sensitive or high-churn files:
 .idea/dataSources/
 .idea/dataSources.ids
