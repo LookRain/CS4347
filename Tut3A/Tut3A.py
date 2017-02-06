@@ -32,51 +32,33 @@ def main():
             ans_file.write(short_path + ',' + '%.6f' % rms + ',' + '%.6f' % par + ',' + '%.6f' % zcr + ',' + '%.6f' % mad + ',' + '%.6f' % meanad + '\n')
 
 
-def calRMS(sample):
-    # 1(a)
-    # Calculating RMS using numpy
+def calRMS(sample):    # Calculating RMS using numpy
     rms = np.sqrt(np.mean(sample ** 2))
     return rms
 
 
-def calPAR(sample, rms):
-    # 1(b)
-    # Calculating PAR
+def calPAR(sample, rms):  # Calculating PAR
     par = np.amax(abs(sample)) / rms
-    # print(par)
     return par
 
 
-def calZCR(sample):
-    # 1(c)
-    # Calculating Zero-Crossing Rate
-    # The following commented code is the original solution, but the current one seems to work much faster
-    # zero_crosses = 0
-    # for i in range(len(sample) - 1):
-    #     if sample[i] * sample[i + 1] < 0:
-    #         zero_crosses += 1
+def calZCR(sample):   # Calculating Zero-Crossing Rate
     zc = ((sample[:-1] * sample[1:]) < 0).sum()
     zcr = zc / len(sample)
-    # print(zcr)
     return zcr
 
 
-def calMAD(sample):
-    # 1(d)
-    # Calculating MAD
+def calMAD(sample):  # Calculating MAD
     sample_median = np.median(sample)
 
     mad = np.median(abs(sample - sample_median))
-    # print(mad)
     return mad
 
 
-def calMeanAD(sample):
-    # 1(e)
-    # Calculating MEAN-AD
+def calMeanAD(sample):    # Calculating MEAN-AD
     sample_mean = np.mean(sample)
     mean_ad = np.mean(abs(sample - sample_mean))
-    # print(mean_ad)
     return mean_ad
+
 
 main()

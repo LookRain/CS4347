@@ -1,10 +1,5 @@
-import wave
-import numpy as np
-import sys
-import numpy
 from scipy.io import wavfile
 import numpy as np
-import csv
 
 
 def main():
@@ -33,11 +28,8 @@ def main():
                 start += 512
                 end += 512
 
-                buffers.append(buffer_data)
-            # print(len(buffers))
-            # print(buffers)
-            # print(len(buffers[1289]))
-            # print(len(sample))
+                if len(buffer_data) == 1024:
+                    buffers.append(buffer_data)
 
             rms_array = []
             par_array = []
@@ -45,7 +37,6 @@ def main():
             mad_array = []
             meanan_array = []
             for i in range(len(buffers)):
-
                 rms = calRMS(buffers[i])
                 par = calPAR(buffers[i], rms)
                 zcr = calZCR(buffers[i])
@@ -57,8 +48,6 @@ def main():
                 mad_array.append(mad)
                 meanan_array.append(meanad)
 
-                # print('%.6f' % rms_mean + ',' + '%.6f' % par_mean + ',' + '%.6f' % zcr_mean + ',' + '%.6f' % mad_mean + ',' + '%.6f' % meanad_mean + '\n')
-            # print(np.mean(rms_array))
             rms_mean = np.mean(rms_array)
             par_mean = np.mean(par_array)
             zcr_mean = np.mean(zcr_array)
@@ -72,59 +61,34 @@ def main():
             meanad_std = np.std(meanan_array)
             print( '%.6f' % rms_mean + ',' + '%.6f' % par_mean + ',' + '%.6f' % zcr_mean + ',' + '%.6f' % mad_mean + ',' + '%.6f' % meanad_mean + ',' + '%.6f' % rms_std + ',' + '%.6f' % par_std + ',' + '%.6f' % zcr_std + ',' + '%.6f' % mad_std + ',' + '%.6f' % meanad_std + ',' + type)
             ans_file.write('%.6f' % rms_mean + ',' + '%.6f' % par_mean + ',' + '%.6f' % zcr_mean + ',' + '%.6f' % mad_mean + ',' + '%.6f' % meanad_mean + ',' + '%.6f' % rms_std + ',' + '%.6f' % par_std + ',' + '%.6f' % zcr_std + ',' + '%.6f' % mad_std + ',' + '%.6f' % meanad_std + ',' + type + '\n')
-            # rms = calRMS(sample)
-            # par = calPAR(sample, rms)
-            # zcr = calZCR(sample)
-            # mad = calMAD(sample)
-            # meanad = calMeanAD(sample)
-            # ans_file.write(short_path + ',' + '%.6f' % rms + ',' + '%.6f' % par + ',' + '%.6f' % zcr + ',' + '%.6f' % mad + ',' + '%.6f' % meanad + '\n')
 
 
-def calRMS(sample):
-    # 1(a)
-    # Calculating RMS using numpy
+def calRMS(sample):    # Calculating RMS using numpy
     rms = np.sqrt(np.mean(sample ** 2))
     return rms
 
 
-def calPAR(sample, rms):
-    # 1(b)
-    # Calculating PAR
+def calPAR(sample, rms):  # Calculating PAR
     par = np.amax(abs(sample)) / rms
-    # print(par)
     return par
 
 
-def calZCR(sample):
-    # 1(c)
-    # Calculating Zero-Crossing Rate
-    # The following commented code is the original solution, but the current one seems to work much faster
-    # zero_crosses = 0
-    # for i in range(len(sample) - 1):
-    #     if sample[i] * sample[i + 1] < 0:
-    #         zero_crosses += 1
+def calZCR(sample):   # Calculating Zero-Crossing Rate
     zc = ((sample[:-1] * sample[1:]) < 0).sum()
     zcr = zc / len(sample)
-    # print(zcr)
     return zcr
 
 
-def calMAD(sample):
-    # 1(d)
-    # Calculating MAD
+def calMAD(sample):  # Calculating MAD
     sample_median = np.median(sample)
 
     mad = np.median(abs(sample - sample_median))
-    # print(mad)
     return mad
 
 
-def calMeanAD(sample):
-    # 1(e)
-    # Calculating MEAN-AD
+def calMeanAD(sample):    # Calculating MEAN-AD
     sample_mean = np.mean(sample)
     mean_ad = np.mean(abs(sample - sample_mean))
-    # print(mean_ad)
     return mean_ad
 
 main()
