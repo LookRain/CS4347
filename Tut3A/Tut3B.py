@@ -8,7 +8,7 @@ import csv
 
 
 def main():
-    mfFilename = "music_speech.mf"
+    mfFilename = "test.mf"
     ans = "ans.csv"
     ans_file = open(ans, "w")
     with open(mfFilename, 'r') as file:
@@ -23,13 +23,46 @@ def main():
             # Since the sound pressure values are int16 types, we divide the values by 2^15 to convert them to
             # float values ranging from -1 to 1
             sample = data / 32768.0
+            num_buffers = 1290
+            buffers = []
+            # print(sample)
+            start = 0
+            end = 1024
+            for i in range(num_buffers):
+                buffer_data = sample[start:end]
+                start += 512
+                end += 512
 
-            rms = calRMS(sample)
-            par = calPAR(sample, rms)
-            zcr = calZCR(sample)
-            mad = calMAD(sample)
-            meanad = calMeanAD(sample)
-            ans_file.write(short_path + ',' + '%.6f' % rms + ',' + '%.6f' % par + ',' + '%.6f' % zcr + ',' + '%.6f' % mad + ',' + '%.6f' % meanad + '\n')
+                buffers.append(buffer_data)
+            # print(len(buffers))
+            # print(buffers)
+            # print(len(buffers[1289]))
+            # print(len(sample))
+            rms_array = []
+            for i in range(len(buffers)):
+
+                rms = calRMS(buffers[i])
+                par = calPAR(buffers[i], rms)
+                zcr = calZCR(buffers[i])
+                mad = calMAD(buffers[i])
+                meanad = calMeanAD(buffers[i])
+                rms_array.append(rms)
+
+
+                # rms_mean = np.mean(rms)
+                # par_mean = np.mean(par)
+                # zcr_mean = np.mean(zcr)
+                # mad_mean = np.mean(mad)
+                # meanad_mean = np.mean(meanad)
+                # print('%.6f' % rms_mean + ',' + '%.6f' % par_mean + ',' + '%.6f' % zcr_mean + ',' + '%.6f' % mad_mean + ',' + '%.6f' % meanad_mean + '\n')
+            print(np.mean(rms_array))
+
+            # rms = calRMS(sample)
+            # par = calPAR(sample, rms)
+            # zcr = calZCR(sample)
+            # mad = calMAD(sample)
+            # meanad = calMeanAD(sample)
+            # ans_file.write(short_path + ',' + '%.6f' % rms + ',' + '%.6f' % par + ',' + '%.6f' % zcr + ',' + '%.6f' % mad + ',' + '%.6f' % meanad + '\n')
 
 
 def calRMS(sample):
