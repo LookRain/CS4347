@@ -8,8 +8,8 @@ import csv
 
 
 def main():
-    mfFilename = "test.mf"
-    ans = "ans.csv"
+    mfFilename = "music_speech.mf"
+    ans = "ans2.arff"
     ans_file = open(ans, "w")
     with open(mfFilename, 'r') as file:
         count = 1
@@ -20,7 +20,7 @@ def main():
             path = 'music_speech/' + short_path  # array of file path
 
             freq, data = wavfile.read(path)
-            # Since the sound pressure values are int16 types, we divide the values by 2^15 to convert them to
+            # Since the sound pressure values have int16 datatype, we divide the values by 2^15 to convert them to
             # float values ranging from -1 to 1
             sample = data / 32768.0
             num_buffers = 1290
@@ -38,7 +38,12 @@ def main():
             # print(buffers)
             # print(len(buffers[1289]))
             # print(len(sample))
+
             rms_array = []
+            par_array = []
+            zcr_array = []
+            mad_array = []
+            meanan_array = []
             for i in range(len(buffers)):
 
                 rms = calRMS(buffers[i])
@@ -47,16 +52,26 @@ def main():
                 mad = calMAD(buffers[i])
                 meanad = calMeanAD(buffers[i])
                 rms_array.append(rms)
+                par_array.append(par)
+                zcr_array.append(zcr)
+                mad_array.append(mad)
+                meanan_array.append(meanad)
 
-
-                # rms_mean = np.mean(rms)
-                # par_mean = np.mean(par)
-                # zcr_mean = np.mean(zcr)
-                # mad_mean = np.mean(mad)
-                # meanad_mean = np.mean(meanad)
                 # print('%.6f' % rms_mean + ',' + '%.6f' % par_mean + ',' + '%.6f' % zcr_mean + ',' + '%.6f' % mad_mean + ',' + '%.6f' % meanad_mean + '\n')
-            print(np.mean(rms_array))
+            # print(np.mean(rms_array))
+            rms_mean = np.mean(rms_array)
+            par_mean = np.mean(par_array)
+            zcr_mean = np.mean(zcr_array)
+            mad_mean = np.mean(mad_array)
+            meanad_mean = np.mean(meanan_array)
 
+            rms_std = np.std(rms_array)
+            par_std = np.std(par_array)
+            zcr_std = np.std(zcr_array)
+            mad_std = np.std(mad_array)
+            meanad_std = np.std(meanan_array)
+            print( '%.6f' % rms_mean + ',' + '%.6f' % par_mean + ',' + '%.6f' % zcr_mean + ',' + '%.6f' % mad_mean + ',' + '%.6f' % meanad_mean +  '%.6f' % rms_std + ',' + '%.6f' % par_std + ',' + '%.6f' % zcr_std + ',' + '%.6f' % mad_std + ',' + '%.6f' % meanad_std + ',' + type)
+            ans_file.write( '%.6f' % rms_mean + ',' + '%.6f' % par_mean + ',' + '%.6f' % zcr_mean + ',' + '%.6f' % mad_mean + ',' + '%.6f' % meanad_mean +  '%.6f' % rms_std + ',' + '%.6f' % par_std + ',' + '%.6f' % zcr_std + ',' + '%.6f' % mad_std + ',' + '%.6f' % meanad_std + ',' + type + '\n')
             # rms = calRMS(sample)
             # par = calPAR(sample, rms)
             # zcr = calZCR(sample)
