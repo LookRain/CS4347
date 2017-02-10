@@ -7,11 +7,15 @@
 # User-specific stuff:
 #/music_wav
 ./music_wav
+music_wav
 #/speech
 ./speech
+speech
 #/speech_wav
+speech_wav
 ./speech_wav
 #/music
+music
 ./music
 .idea/workspace.xml
 .idea/tasks.xml
