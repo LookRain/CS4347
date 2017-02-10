@@ -5,6 +5,10 @@
 .idea
 #/.idea
 # User-specific stuff:
+#/music_wav
+#/speech
+#/speech_wav
+#/music
 .idea/workspace.xml
 .idea/tasks.xml
 tut3/music_speech
