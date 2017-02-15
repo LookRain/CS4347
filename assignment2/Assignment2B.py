@@ -1,102 +1,133 @@
 from scipy.io import wavfile
+from scipy import signal
+from scipy.fftpack import fft
 import numpy as np
+
+filename = "music_speech.mf"
+
+N = 1024
 
 
 def main():
-    # read mf file and all wav files, initialize the arff file headers
-    mfFilename = "music_speech.mf"
-    ans = "ans2.arff"
-    ans_file = open(ans, "w")
-    header = '@RELATION music_speech\n@ATTRIBUTE RMS_MEAN NUMERIC\n@ATTRIBUTE PAR_MEAN NUMERIC\n@ATTRIBUTE ZCR_MEAN NUMERIC\n@ATTRIBUTE MAD_MEAN NUMERIC\n@ATTRIBUTE MEAN_AD_MEAN NUMERIC\n@ATTRIBUTE RMS_STD NUMERIC\n@ATTRIBUTE PAR_STD NUMERIC\n@ATTRIBUTE ZCR_STD NUMERIC\n@ATTRIBUTE MAD_STD NUMERIC\n@ATTRIBUTE MEAN_AD_STD NUMERIC\n@ATTRIBUTE class {music,speech}\n\n'
-    ans_file.write(header + '@DATA\n')
+    txt = open(filename)
+    fileList = txt.readlines()
+    txt.close()
+    num_files = len(fileList)
 
-    # read wav files one by one, calculating their features
-    with open(mfFilename, 'r') as file:
-        for line in file:
-            splitString = line.split('\t')
-            type = splitString[1].strip()  # array of file type
-            short_path = splitString[0]
-            path = 'music_speech/' + short_path  # array of file path
+    writeHeader()
+    bufferMatrix = np.zeros((1290, N))
+    dftMatrix = np.zeros((1290, N / 2 + 1))
 
-            freq, data = wavfile.read(path)
-            # Since the sound pressure values have int16 datatype, we divide the values by 2^15 to convert them to
-            # float values ranging from -1 to 1
-            sample = data / 32768.0
+    for i in range(num_files):
+        j, k = fileList[i].split("\t")  # split string after \t
+        rate, sample = wavfile.read(j)  # read in wavfile
+        # sample = sample / 32768.0  # convert sample to floats
+        sampleArray = sample / 32768.0  # creates array of sample values
+        length = np.size(sampleArray)  # number of samples of all files
 
-            # initialize buffers
-            num_buffers = 1290
-            buffers = []
-            start = 0
-            end = 1024
-            # generate buffers with hopsize of 512 ignoring incomplete buffers
-            for i in range(num_buffers):
-                buffer_data = sample[start:end]
-                start += 512
-                end += 512
+        buffer_data = []
+        num_buffer = int(length / N) * 2
+        start = 0
+        end = 1024
+        for e in range(num_buffer):
+            buffer_data = sampleArray[start:end]
+            buffer_data = buffer_data * signal.hamming(N)
+            bufferDFT = fft(buffer_data)
+            bufferDFT = bufferDFT[:N / 2 + 1]
+            bufferDFT = np.abs(bufferDFT)
+            dftMatrix[e, :] = bufferDFT
+            start = start + 512
+            end = end + 512
 
-                if len(buffer_data) == 1024:
-                    buffers.append(buffer_data)
+        featureMatrix = np.zeros((num_buffer, 5))
+        featureMatrix[:, 0] = calcSC(dftMatrix)
+        featureMatrix[:, 1] = np.apply_along_axis(calcSRO, 1, dftMatrix)
+        featureMatrix[:, 2] = calcSFM(dftMatrix)
+        featureMatrix[:, 3] = calcPARFFT(dftMatrix)
+        featureMatrix[:, 4] = calcFLUX(dftMatrix)
 
-            # initialize arrays for all features
-            rms_array = []
-            par_array = []
-            zcr_array = []
-            mad_array = []
-            meanan_array = []
-
-            # calculate features
-            for i in range(len(buffers)):
-                rms = calRMS(buffers[i])
-                par = calPAR(buffers[i], rms)
-                zcr = calZCR(buffers[i])
-                mad = calMAD(buffers[i])
-                meanad = calMeanAD(buffers[i])
-                rms_array.append(rms)
-                par_array.append(par)
-                zcr_array.append(zcr)
-                mad_array.append(mad)
-                meanan_array.append(meanad)
-            # genereate mean and std of features, write to answer file
-            rms_mean = np.mean(rms_array)
-            par_mean = np.mean(par_array)
-            zcr_mean = np.mean(zcr_array)
-            mad_mean = np.mean(mad_array)
-            meanad_mean = np.mean(meanan_array)
-
-            rms_std = np.std(rms_array)
-            par_std = np.std(par_array)
-            zcr_std = np.std(zcr_array)
-            mad_std = np.std(mad_array)
-            meanad_std = np.std(meanan_array)
-            print('%.6f' % rms_mean + ',' + '%.6f' % par_mean + ',' + '%.6f' % zcr_mean + ',' + '%.6f' % mad_mean + ',' + '%.6f' % meanad_mean + ',' + '%.6f' % rms_std + ',' + '%.6f' % par_std + ',' + '%.6f' % zcr_std + ',' + '%.6f' % mad_std + ',' + '%.6f' % meanad_std + ',' + type)
-            ans_file.write('%.6f' % rms_mean + ',' + '%.6f' % par_mean + ',' + '%.6f' % zcr_mean + ',' + '%.6f' % mad_mean + ',' + '%.6f' % meanad_mean + ',' + '%.6f' % rms_std + ',' + '%.6f' % par_std + ',' + '%.6f' % zcr_std + ',' + '%.6f' % mad_std + ',' + '%.6f' % meanad_std + ',' + type + '\n')
+        writeData(featureMatrix, k)
 
 
-def calRMS(sample):    # Calculating RMS using numpy
-    rms = np.sqrt(np.mean(sample ** 2))
-    return rms
+def writeHeader():
+    f = open("dft.arff", "w")
+    f.write('''@RELATION music_speech
+@ATTRIBUTE SC_MEAN NUMERIC
+@ATTRIBUTE SRO_MEAN NUMERIC
+@ATTRIBUTE SFM_MEAN NUMERIC
+@ATTRIBUTE PARFFT_MEAN NUMERIC
+@ATTRIBUTE FLUX_MEAN NUMERIC
+@ATTRIBUTE SC_STD NUMERIC
+@ATTRIBUTE SRO_STD NUMERIC
+@ATTRIBUTE SFM_STD NUMERIC
+@ATTRIBUTE PARFFT_STD NUMERIC
+@ATTRIBUTE FLUX_STD NUMERIC
+@ATTRIBUTE class {music,speech}\n
+@DATA\n''')
 
 
-def calPAR(sample, rms):  # Calculating PAR
-    par = np.amax(abs(sample)) / rms
-    return par
+def calcSC(matrix):
+    SCMatrix = np.copy(matrix)
+    grid = np.indices((1290, 513))
+    SCa = np.sum(grid[1] * SCMatrix, axis=1)
+    SCb = np.sum(SCMatrix, axis=1)
+    SC = SCa / SCb
+    return SC
 
 
-def calZCR(sample):   # Calculating Zero-Crossing Rate
-    zc = ((sample[:-1] * sample[1:]) < 0).sum()
-    zcr = zc / (len(sample) - 1)
-    return zcr
+def calcSRO(matrix):
+    SROMatrix = np.copy(matrix)
+    SROcompare = 0.85 * np.sum(SROMatrix)
+    SROsum = 0
 
-def calMAD(sample):  # Calculating MAD
-    sample_median = np.median(sample)
+    for i in range(0, len(SROMatrix)):
+        SROsum += SROMatrix[i]
+        if SROsum >= SROcompare:
+            return i
 
-    mad = np.median(abs(sample - sample_median))
-    return mad
+
+def calcSFM(matrix):
+    gMean = np.exp(np.mean(np.log(matrix), axis=1))
+    aMean = np.mean(matrix, axis=1)
+    SFM = gMean / aMean
+    return SFM
 
 
-def calMeanAD(sample):    # Calculating MEAN-AD
-    sample_mean = np.mean(sample)
-    mean_ad = np.mean(abs(sample - sample_mean))
-    return mean_ad
+def calcPARFFT(matrix):
+    RMS = np.sqrt(np.mean(np.square(matrix), axis=1))
+    PAR = np.amax(matrix, axis=1)
+    PARFFT = PAR / RMS
+    return PARFFT
+
+
+def calcFLUX(matrix):
+    SFMatrix = np.copy(matrix)
+    minusOne = np.zeros(matrix.shape[1])
+    SFprev = np.vstack([minusOne, matrix[:-1]])
+    SFdiff = SFMatrix - SFprev
+    SF = np.sum(SFdiff.clip(0), axis=1)
+    return SF
+
+
+def writeData(featureMatrix, k):
+    f = open("dft.arff", "a")
+    writeMatrix = np.zeros(10)
+    writeMatrix[0:5] = np.mean(featureMatrix, axis=0)
+    writeMatrix[5:10] = np.std(featureMatrix, axis=0)
+    SC_MEAN = writeMatrix[0]
+    SRO_MEAN = writeMatrix[1]
+    SFM_MEAN = writeMatrix[2]
+    PARFFT_MEAN = writeMatrix[3]
+    FLUX_MEAN = writeMatrix[4]
+
+    SC_STD = writeMatrix[5]
+    SRO_STD = writeMatrix[6]
+    SFM_STD = writeMatrix[7]
+    PARFFT_STD = writeMatrix[8]
+    FLUX_STD = writeMatrix[9]
+
+    f.write("%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%s" % (
+    SC_MEAN, SRO_MEAN, SFM_MEAN, PARFFT_MEAN, FLUX_MEAN, SC_STD, SRO_STD, SFM_STD, PARFFT_STD, FLUX_STD, k))
+
 
 main()
