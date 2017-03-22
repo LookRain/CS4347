@@ -98,7 +98,7 @@ def calcFLUX(matrix):
 
 
 def writeHeader():
-    ans_path = "assignment2.arff"
+    ans_path = "Assignment2.arff"
     ans_file = open(ans_path, 'w')
     ans_file.write('''@RELATION music_speech
 @ATTRIBUTE SC_MEAN NUMERIC
@@ -115,7 +115,7 @@ def writeHeader():
 
 
 def writeData(featureMatrix, type):
-    ans_path = "assignment2.arff"
+    ans_path = "Assignment2.arff"
     ans_file = open(ans_path, "a")
     ans_matrix = np.zeros(10)
     ans_matrix[0:5] = np.mean(featureMatrix, axis=0)
