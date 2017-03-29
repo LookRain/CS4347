@@ -1,0 +1,153 @@
+I used both LMT and J48 to do the classification.
+J48 performed best as it has higher weighted average TP rate (0.914 > 0.875) and lower weighted average FP rate (0.086 < 0.125) than LMT.
+
+
+=== Run information ===
+
+Scheme:       weka.classifiers.trees.LMT -I -1 -M 15 -W 0.0
+Relation:     music_speech
+Instances:    128
+Attributes:   11
+              SC_MEAN
+              SRO_MEAN
+              SFM_MEAN
+              PARFFT_MEAN
+              FLUX_MEAN
+              SC_STD
+              SRO_STD
+              SFM_STD
+              PARFFT_STD
+              FLUX_STD
+              class
+Test mode:    10-fold cross-validation
+
+=== Classifier model (full training set) ===
+
+Logistic model tree 
+------------------
+: LM_1:18/18 (128)
+
+Number of Leaves  :   1
+
+Size of the Tree :  1
+LM_1:
+Class 0 :
+7.49 + 
+[SC_MEAN] * -0.01 +
+[PARFFT_MEAN] * 0.11 +
+[FLUX_MEAN] * 0    +
+[SC_STD] * -0.05 +
+[SRO_STD] * 0.03 +
+[SFM_STD] * -17.35 +
+[PARFFT_STD] * -2.18
+
+Class 1 :
+-7.49 + 
+[SC_MEAN] * 0.01 +
+[PARFFT_MEAN] * -0.11 +
+[FLUX_MEAN] * -0 +
+[SC_STD] * 0.05 +
+[SRO_STD] * -0.03 +
+[SFM_STD] * 17.35 +
+[PARFFT_STD] * 2.18
+
+
+Time taken to build model: 0.03 seconds
+
+=== Stratified cross-validation ===
+=== Summary ===
+
+Correctly Classified Instances         112               87.5    %
+Incorrectly Classified Instances        16               12.5    %
+Kappa statistic                          0.75  
+Mean absolute error                      0.1395
+Root mean squared error                  0.3076
+Relative absolute error                 27.8855 %
+Root relative squared error             61.4767 %
+Total Number of Instances              128     
+
+=== Detailed Accuracy By Class ===
+
+                 TP Rate  FP Rate  Precision  Recall   F-Measure  MCC      ROC Area  PRC Area  Class
+                 0.859    0.109    0.887      0.859    0.873      0.750    0.935     0.918     music
+                 0.891    0.141    0.864      0.891    0.877      0.750    0.935     0.936     speech
+Weighted Avg.    0.875    0.125    0.875      0.875    0.875      0.750    0.935     0.927     
+
+=== Confusion Matrix ===
+
+  a  b   <-- classified as
+ 55  9 |  a = music
+  7 57 |  b = speech
+
+
+
+-----J48------
+
+=== Run information ===
+
+Scheme:       weka.classifiers.trees.J48 -C 0.25 -M 2
+Relation:     music_speech
+Instances:    128
+Attributes:   11
+              SC_MEAN
+              SRO_MEAN
+              SFM_MEAN
+              PARFFT_MEAN
+              FLUX_MEAN
+              SC_STD
+              SRO_STD
+              SFM_STD
+              PARFFT_STD
+              FLUX_STD
+              class
+Test mode:    10-fold cross-validation
+
+=== Classifier model (full training set) ===
+
+J48 pruned tree
+------------------
+
+PARFFT_STD <= 3.249124
+|   SFM_MEAN <= 0.404686
+|   |   PARFFT_STD <= 2.783356: music (47.0)
+|   |   PARFFT_STD > 2.783356
+|   |   |   SFM_STD <= 0.105588: music (14.0/1.0)
+|   |   |   SFM_STD > 0.105588: speech (11.0/2.0)
+|   SFM_MEAN > 0.404686: speech (11.0/1.0)
+PARFFT_STD > 3.249124: speech (45.0/1.0)
+
+Number of Leaves  : 	5
+
+Size of the tree : 	9
+
+
+Time taken to build model: 0 seconds
+
+=== Stratified cross-validation ===
+=== Summary ===
+
+Correctly Classified Instances         117               91.4063 %
+Incorrectly Classified Instances        11                8.5938 %
+Kappa statistic                          0.8281
+Mean absolute error                      0.103 
+Root mean squared error                  0.2848
+Relative absolute error                 20.5887 %
+Root relative squared error             56.9296 %
+Total Number of Instances              128     
+
+=== Detailed Accuracy By Class ===
+
+                 TP Rate  FP Rate  Precision  Recall   F-Measure  MCC      ROC Area  PRC Area  Class
+                 0.859    0.031    0.965      0.859    0.909      0.833    0.917     0.929     music
+                 0.969    0.141    0.873      0.969    0.919      0.833    0.917     0.858     speech
+Weighted Avg.    0.914    0.086    0.919      0.914    0.914      0.833    0.917     0.893     
+
+=== Confusion Matrix ===
+
+  a  b   <-- classified as
+ 55  9 |  a = music
+  2 62 |  b = speech
+
+
+
+

@@ -1,0 +1,13 @@
+Comparing the 3 feature spaces, perceptual features performed best in classifying music and speech as shown in the table below. It has the highest TP rate of 96.1% and lowest FP rate of 3.9%.
+
+LMT:
+
+Weighted Avg.	TP Rate  FP Rate  Precision  Recall   F-Measure  MCC      ROC Area  PRC Area
+Time-domain	    0.953    0.047    0.954      0.953    0.953      0.907    0.994     0.995     
+freq_domain		0.875    0.125    0.875      0.875    0.875      0.750    0.935     0.927
+perceptual		0.961    0.039    0.961      0.961    0.961      0.922    0.980     0.979 
+
+
+Possible reason for its best performance is MFCC uses mel-frequency that approximates the human auditory system's response to sounds of different frequencies. Using MFCC can distinguish the 2 classes better as it uses non linearly spaced frequency bands just like human hearing system.
+
+Except for the lazy.LWL algorithm on time-domain feature space, which performed as good as LMT on MFCC, all other algorithms performed worse than LMT on MFCC.

@@ -1,0 +1,171 @@
+I used both LMT and LWL to do the classification.
+The lazy algorithm LWL was the best performing algorithm because it has higher weighted average TP rate(0.961>0.953) and lower FP rate(0.039<0.047).
+
+By performing an attribute selection using search method Ranker and evaluator InfoGainAttributeEval, it can be obtained that PAR_STD contributely most significantly in classification, followed by ZCR_STD and PAR_MEAN.
+These features mostly agree with my visualisation, as shown in the PAR_STD VS ZCR_STD graph, the data points of music and speech can be visually classified into 2 groups.
+
+PAR_STD: Music files have generally lower PAR_STD probably because music often follow a pattern so that it pleases to human ears, therefore the ratio between the the peak amplitude and the RMS is generally consistent across songs. While human speech can vary a lot in this aspect due to different occassions and emotions of the speakers, resulting in higher SD in PAR.
+ZCR_STD: Music and speech have very different ZCR_STD because human speech involves many type of sounds, words or syllables that have percussive sounds or like 'Piece', 'freeze','sis' can have high ZCR, while words like "i", "am" have lower ZCR. So the SD is higher. Music generally do not change much in ZCR as the instruments are played fairly consistently throughout the songs.
+
+
+
+
+
+=== Run information ===
+
+Scheme:       weka.classifiers.trees.LMT -I -1 -M 15 -W 0.0
+Relation:     music_speech
+Instances:    128
+Attributes:   11
+              RMS_MEAN
+              PAR_MEAN
+              ZCR_MEAN
+              MAD_MEAN
+              MEAN_AD_MEAN
+              RMS_STD
+              PAR_STD
+              ZCR_STD
+              MAD_STD
+              MEAN_AD_STD
+              class
+Test mode:    10-fold cross-validation
+
+=== Classifier model (full training set) ===
+
+Logistic model tree 
+------------------
+
+PAR_STD <= 0.633063: LM_1:4/8 (60)
+PAR_STD > 0.633063
+|   ZCR_STD <= 0.04332: LM_2:4/12 (8)
+|   ZCR_STD > 0.04332: LM_3:4/12 (60)
+
+Number of Leaves  : 	3
+
+Size of the Tree : 	5
+
+LM_1:
+Class 0 :
+7.63 + 
+[PAR_STD] * -6.06 +
+[ZCR_STD] * -18.05
+
+Class 1 :
+-7.63 + 
+[PAR_STD] * 6.06 +
+[ZCR_STD] * 18.05
+
+
+LM_2:
+Class 0 :
+16.28 + 
+[PAR_MEAN] * 1.09 +
+[PAR_STD] * -12.91 +
+[ZCR_STD] * -94.63 +
+[MAD_STD] * -266.73
+
+Class 1 :
+-16.28 + 
+[PAR_MEAN] * -1.09 +
+[PAR_STD] * 12.91 +
+[ZCR_STD] * 94.63 +
+[MAD_STD] * 266.73
+
+LM_3:
+Class 0 :
+2.47 + 
+[PAR_MEAN] * 1.09 +
+[PAR_STD] * -6.28 +
+[ZCR_STD] * -94.63
+
+Class 1 :
+-2.47 + 
+[PAR_MEAN] * -1.09 +
+[PAR_STD] * 6.28 +
+[ZCR_STD] * 94.63
+
+
+Time taken to build model: 0.1 seconds
+
+=== Stratified cross-validation ===
+=== Summary ===
+
+Correctly Classified Instances         122               95.3125 %
+Incorrectly Classified Instances         6                4.6875 %
+Kappa statistic                          0.9063
+Mean absolute error                      0.0725
+Root mean squared error                  0.1739
+Relative absolute error                 14.4928 %
+Root relative squared error             34.7673 %
+Total Number of Instances              128     
+
+=== Detailed Accuracy By Class ===
+
+                 TP Rate  FP Rate  Precision  Recall   F-Measure  MCC      ROC Area  PRC Area  Class
+                 0.938    0.031    0.968      0.938    0.952      0.907    0.994     0.995     music
+                 0.969    0.063    0.939      0.969    0.954      0.907    0.994     0.994     speech
+Weighted Avg.    0.953    0.047    0.954      0.953    0.953      0.907    0.994     0.995     
+
+=== Confusion Matrix ===
+
+  a  b   <-- classified as
+ 60  4 |  a = music
+  2 62 |  b = speech
+
+
+
+
+=== Run information ===
+
+Scheme:       weka.classifiers.lazy.LWL -U 0 -K -1 -A "weka.core.neighboursearch.LinearNNSearch -A \"weka.core.EuclideanDistance -R first-last\"" -W weka.classifiers.trees.DecisionStump
+Relation:     music_speech
+Instances:    128
+Attributes:   11
+              RMS_MEAN
+              PAR_MEAN
+              ZCR_MEAN
+              MAD_MEAN
+              MEAN_AD_MEAN
+              RMS_STD
+              PAR_STD
+              ZCR_STD
+              MAD_STD
+              MEAN_AD_STD
+              class
+Test mode:    10-fold cross-validation
+
+=== Classifier model (full training set) ===
+
+Locally weighted learning
+===========================
+Using classifier: weka.classifiers.trees.DecisionStump
+Using linear weighting kernels
+Using all neighbours
+
+Time taken to build model: 0 seconds
+
+=== Stratified cross-validation ===
+=== Summary ===
+
+Correctly Classified Instances         123               96.0938 %
+Incorrectly Classified Instances         5                3.9063 %
+Kappa statistic                          0.9219
+Mean absolute error                      0.0651
+Root mean squared error                  0.1899
+Relative absolute error                 13.0036 %
+Root relative squared error             37.9592 %
+Total Number of Instances              128     
+
+=== Detailed Accuracy By Class ===
+
+                 TP Rate  FP Rate  Precision  Recall   F-Measure  MCC      ROC Area  PRC Area  Class
+                 0.922    0.000    1.000      0.922    0.959      0.925    0.972     0.980     music
+                 1.000    0.078    0.928      1.000    0.962      0.925    0.972     0.966     speech
+Weighted Avg.    0.961    0.039    0.964      0.961    0.961      0.925    0.972     0.973     
+
+=== Confusion Matrix ===
+
+  a  b   <-- classified as
+ 59  5 |  a = music
+  0 64 |  b = speech
+

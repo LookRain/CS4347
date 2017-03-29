@@ -1,0 +1,224 @@
+I used both LMT and REPTree to do the classification.
+LMT performed best as it has higher weighted average TP rate (0.961 > 0.922) and lower weighted average FP rate (0.039 < 0.078) than LMT.
+
+
+
+
+=== Run information ===
+
+Scheme:       weka.classifiers.trees.LMT -I -1 -M 15 -W 0.0
+Relation:     music_speech
+Instances:    128
+Attributes:   53
+              MFCC_0
+              MFCC_1
+              MFCC_2
+              MFCC_3
+              MFCC_4
+              MFCC_5
+              MFCC_6
+              MFCC_7
+              MFCC_8
+              MFCC_9
+              MFCC_10
+              MFCC_11
+              MFCC_12
+              MFCC_13
+              MFCC_14
+              MFCC_15
+              MFCC_16
+              MFCC_17
+              MFCC_18
+              MFCC_19
+              MFCC_20
+              MFCC_21
+              MFCC_22
+              MFCC_23
+              MFCC_24
+              MFCC_25
+              MFCC_26
+              MFCC_27
+              MFCC_28
+              MFCC_29
+              MFCC_30
+              MFCC_31
+              MFCC_32
+              MFCC_33
+              MFCC_34
+              MFCC_35
+              MFCC_36
+              MFCC_37
+              MFCC_38
+              MFCC_39
+              MFCC_40
+              MFCC_41
+              MFCC_42
+              MFCC_43
+              MFCC_44
+              MFCC_45
+              MFCC_46
+              MFCC_47
+              MFCC_48
+              MFCC_49
+              MFCC_50
+              MFCC_51
+              class
+Test mode:    10-fold cross-validation
+
+=== Classifier model (full training set) ===
+
+Logistic model tree 
+------------------
+: LM_1:2/2 (128)
+
+Number of Leaves  : 	1
+
+Size of the Tree : 	1
+LM_1:
+Class 0 :
+0.3  + 
+[MFCC_31] * -0.96 +
+[MFCC_51] * 2.93
+
+Class 1 :
+-0.3 + 
+[MFCC_31] * 0.96 +
+[MFCC_51] * -2.93
+
+
+Time taken to build model: 0.03 seconds
+
+=== Stratified cross-validation ===
+=== Summary ===
+
+Correctly Classified Instances         123               96.0938 %
+Incorrectly Classified Instances         5                3.9063 %
+Kappa statistic                          0.9219
+Mean absolute error                      0.1392
+Root mean squared error                  0.2114
+Relative absolute error                 27.8211 %
+Root relative squared error             42.2659 %
+Total Number of Instances              128     
+
+=== Detailed Accuracy By Class ===
+
+                 TP Rate  FP Rate  Precision  Recall   F-Measure  MCC      ROC Area  PRC Area  Class
+                 0.953    0.031    0.968      0.953    0.961      0.922    0.980     0.987     music
+                 0.969    0.047    0.954      0.969    0.961      0.922    0.980     0.971     speech
+Weighted Avg.    0.961    0.039    0.961      0.961    0.961      0.922    0.980     0.979     
+
+=== Confusion Matrix ===
+
+  a  b   <-- classified as
+ 61  3 |  a = music
+  2 62 |  b = speech
+
+
+
+
+--------REPTree-----------
+
+
+
+
+=== Run information ===
+
+Scheme:       weka.classifiers.trees.REPTree -M 2 -V 0.001 -N 3 -S 1 -L -1 -I 0.0
+Relation:     music_speech
+Instances:    128
+Attributes:   53
+              MFCC_0
+              MFCC_1
+              MFCC_2
+              MFCC_3
+              MFCC_4
+              MFCC_5
+              MFCC_6
+              MFCC_7
+              MFCC_8
+              MFCC_9
+              MFCC_10
+              MFCC_11
+              MFCC_12
+              MFCC_13
+              MFCC_14
+              MFCC_15
+              MFCC_16
+              MFCC_17
+              MFCC_18
+              MFCC_19
+              MFCC_20
+              MFCC_21
+              MFCC_22
+              MFCC_23
+              MFCC_24
+              MFCC_25
+              MFCC_26
+              MFCC_27
+              MFCC_28
+              MFCC_29
+              MFCC_30
+              MFCC_31
+              MFCC_32
+              MFCC_33
+              MFCC_34
+              MFCC_35
+              MFCC_36
+              MFCC_37
+              MFCC_38
+              MFCC_39
+              MFCC_40
+              MFCC_41
+              MFCC_42
+              MFCC_43
+              MFCC_44
+              MFCC_45
+              MFCC_46
+              MFCC_47
+              MFCC_48
+              MFCC_49
+              MFCC_50
+              MFCC_51
+              class
+Test mode:    10-fold cross-validation
+
+=== Classifier model (full training set) ===
+
+
+REPTree
+============
+
+MFCC_31 < 1.95 : music (39/1) [15/1]
+MFCC_31 >= 1.95
+|   MFCC_0 < 15.81 : speech (36/0) [20/2]
+|   MFCC_0 >= 15.81 : music (10/5) [8/3]
+
+Size of the tree : 5
+
+Time taken to build model: 0.01 seconds
+
+=== Stratified cross-validation ===
+=== Summary ===
+
+Correctly Classified Instances         118               92.1875 %
+Incorrectly Classified Instances        10                7.8125 %
+Kappa statistic                          0.8438
+Mean absolute error                      0.1298
+Root mean squared error                  0.2704
+Relative absolute error                 25.9548 %
+Root relative squared error             54.0482 %
+Total Number of Instances              128     
+
+=== Detailed Accuracy By Class ===
+
+                 TP Rate  FP Rate  Precision  Recall   F-Measure  MCC      ROC Area  PRC Area  Class
+                 0.938    0.094    0.909      0.938    0.923      0.844    0.904     0.895     music
+                 0.906    0.063    0.935      0.906    0.921      0.844    0.904     0.870     speech
+Weighted Avg.    0.922    0.078    0.922      0.922    0.922      0.844    0.904     0.882     
+
+=== Confusion Matrix ===
+
+  a  b   <-- classified as
+ 60  4 |  a = music
+  6 58 |  b = speech
+
